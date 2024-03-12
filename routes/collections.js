@@ -1,91 +1,107 @@
 const express = require("express");
 const router = express.Router();
-const sequelize = require("sequelize");
-
-const Collections = require("../models/collections");
+const { Op } = require("sequelize");
+const { Collection } = require("../models");
 
 router.get("/", async (req, res) => {
   try {
-    const collectionData = await Collections.find({
-      ownerEmail: req.user.email,
+    res.send("Testing collections base url");
+    const collectionData = await Collection.findAll({
+      where: { ownerEmail: req.user.email },
     });
     res.status(200).json(collectionData);
   } catch (error) {
-    res.json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 });
 
 router.get("/:id", async (req, res) => {
   try {
-    const collectionId = new sequelize.ObjectID(req.params.id);
-    const collectionData = await Collections.findById(collectionId);
-    if (
-      collectionData.ownerEmail !== req.user.email &&
-      !collectionData.isPublic
-    ) {
-      return res.status(200).json({ private: true });
+    res.send("Testing collections base / id");
+    const collectionData = await Collection.findOne({
+      where: {
+        id: req.params.id,
+        [Op.or]: [
+          { ownerEmail: req.user.email },
+          { isPublic: true }
+        ]
+      },
+    });
+    if (!collectionData) {
+      return res.status(404).json({ message: "Collection not found" });
     }
     res.status(200).json(collectionData);
   } catch (error) {
-    res.json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 });
 
 router.post("/", async (req, res) => {
-  const collection = new Collections({
-    name: req.body.name,
-    ownerEmail: req.user.email,
-  });
-
   try {
-    const newCollection = await collection.save();
-    res.status(200).json(newCollection);
+    const newCollection = await Collection.create({
+      name: req.body.name,
+      ownerEmail: req.user.email,
+    });
+    res.status(201).json(newCollection);
   } catch (error) {
-    res.json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 });
 
 router.put("/:id", async (req, res) => {
   try {
-    const collectionId = new sequelize.ObjectID(req.params.id);
-    const collection = await Collections.findById(collectionId);
-    if (collection.ownerEmail !== req.user.email) {
-      return res.json({ error: "Unauthorized" });
+    const [updatedRowsCount] = await Collection.update(
+      { name: req.body.name },
+      {
+        where: {
+          id: req.params.id,
+          ownerEmail: req.user.email,
+        },
+      }
+    );
+    if (updatedRowsCount === 0) {
+      return res.status(404).json({ message: "Collection not found or unauthorized" });
     }
-    collection.name = req.body.name;
-    const updatedCollection = await collection.save();
-    res.status(200).json(updatedCollection);
+    res.status(200).json({ message: "Collection updated successfully" });
   } catch (error) {
-    res.json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 });
 
 router.post("/changeVisibility", async (req, res) => {
   try {
-    const collectionId = new mongodb.ObjectID(req.body.id);
-    const collection = await Collections.findById(collectionId);
-    if (collection.ownerEmail !== req.user.email) {
-      return res.json({ error: "Unauthorized" });
+    const [updatedRowsCount] = await Collection.update(
+      { isPublic: req.body.isPublic },
+      {
+        where: {
+          id: req.body.id,
+          ownerEmail: req.user.email,
+        },
+      }
+    );
+    if (updatedRowsCount === 0) {
+      return res.status(404).json({ message: "Collection not found or unauthorized" });
     }
-    collection.isPublic = !collection.isPublic;
-    const updatedCollection = await collection.save();
-    res.status(200).json(updatedCollection);
+    res.status(200).json({ message: "Visibility updated successfully" });
   } catch (error) {
-    res.json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 });
 
 router.delete("/:id", async (req, res) => {
   try {
-    const collectionId = new mongodb.ObjectID(req.params.id);
-    const collection = await Collections.findById(collectionId);
-    if (collection.ownerEmail !== req.user.email) {
-      return res.json({ error: "Unauthorized" });
+    const deletedRowsCount = await Collection.destroy({
+      where: {
+        id: req.params.id,
+        ownerEmail: req.user.email,
+      },
+    });
+    if (deletedRowsCount === 0) {
+      return res.status(404).json({ message: "Collection not found or unauthorized" });
     }
-    await Collections.deleteOne({ _id: collectionId });
-    res.status(200).json(collection);
+    res.status(200).json({ message: "Collection deleted successfully" });
   } catch (error) {
-    res.json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 });
 
