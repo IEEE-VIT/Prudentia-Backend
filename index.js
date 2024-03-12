@@ -1,6 +1,7 @@
 const express = require("express");
 const { Sequelize } = require("sequelize");
 const app = express();
+require("dotenv").config({ path: "./credentials.env" });
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
@@ -13,10 +14,10 @@ app.get("/", (req, res) => {
 try {
   const sequelize = new Sequelize({
     dialect: "postgres",
-    host: "aws-0-ap-south-1.pooler.supabase.com",
-    username: "postgres.fgwehrnaowvotpierxbd",
-    password: "Prudentia@2023",
-    database: "postgres",
+    host: process.env.DB_HOST,
+    username: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
     dialectOptions: {
       authentication: {
         type: "md5",
