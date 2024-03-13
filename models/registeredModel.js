@@ -1,5 +1,5 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("../utils/index.js");
+const sequelize = require("../index.js");
 
 const Registered = sequelize.define("Registered", {
   email_id: {
