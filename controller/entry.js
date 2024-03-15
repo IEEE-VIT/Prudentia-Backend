@@ -13,26 +13,20 @@ const addEntryToAllTables = async (req, res) => {
       team_code: "TEAM001",
     });
 
-    // Create a new team entry
     const newTeam = await Team.create({
       team_code: "TEAM001",
       team_name: "Team 1",
       leader_email: "arthy.2022@vitstudent.ac.in",
-      // Add other team properties here
     });
 
-    // Create a new deadline entry
     const newDeadline = await Deadline.create({
       round_number: 1,
       end_date: "2024-03-22",
       end_time: "22:05:00",
-      // Add other deadline properties here
     });
 
-    // Create a new registered entry
     const newRegistered = await Registered.create({
       email_id: "arthy.2022@vitstudent.ac.in",
-      // Add other registered properties here
     });
 
     res.json({

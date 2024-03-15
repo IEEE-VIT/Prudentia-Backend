@@ -3,7 +3,6 @@ const { Sequelize } = require("sequelize");
 const app = express();
 require("dotenv").config({ path: "./credentials.env" });
 
-// Create Sequelize instance
 const sequelize = new Sequelize({
   dialect: "postgres",
   host: process.env.DB_HOST,
@@ -17,5 +16,4 @@ const sequelize = new Sequelize({
   },
 });
 
-// Export the Sequelize instance for use in other modules
 module.exports = sequelize;

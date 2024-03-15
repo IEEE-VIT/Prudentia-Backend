@@ -3,13 +3,12 @@ const Team = require("../models/TeamModel");
 const submitController = {
   round0: async (req, res) => {
     try {
-      const { link } = req.body;
-      const teamCode = req.user.team_code;
+      const { link, team_code } = req.body;
 
       await Team.update(
         { r0_ppt_link: link },
         {
-          where: { team_code: teamCode },
+          where: { team_code: team_code },
         }
       );
 
@@ -21,13 +20,12 @@ const submitController = {
   },
   round2: async (req, res) => {
     try {
-      const { link } = req.body;
-      const teamCode = req.user.team_code;
+      const { link, team_code } = req.body;
 
       await Team.update(
         { r2_github_link: link },
         {
-          where: { team_code: teamCode },
+          where: { team_code: team_code },
         }
       );
 
@@ -39,13 +37,12 @@ const submitController = {
   },
   round3: async (req, res) => {
     try {
-      const { link } = req.body;
-      const teamCode = req.user.team_code;
+      const { link, team_code } = req.body;
 
       await Team.update(
         { r3_ppt_link: link },
         {
-          where: { team_code: teamCode },
+          where: { team_code: team_code },
         }
       );
 

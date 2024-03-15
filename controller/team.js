@@ -4,9 +4,9 @@ const User = require("../models/userModel");
 const teamController = {
   getdetails: async (req, res) => {
     try {
-      const user = req.user;
+      const { team_code } = req.body;
 
-      const team = await Team.findByPk(user.team_code);
+      const team = await Team.findByPk(team_code);
 
       if (!team) {
         return res.status(404).json({ error: "Team not found for the user" });
@@ -20,20 +20,19 @@ const teamController = {
   },
   createteam: async (req, res) => {
     try {
-      const { team_code, team_name } = req.body;
-      const user = req.user;
+      const { team_code, team_name, email_id } = req.body;
 
       await User.update(
         { team_code },
         {
-          where: { email_id: user.email_id },
+          where: { email_id },
         }
       );
 
       await Team.create({
         team_code,
         team_name,
-        leader_email: user.email_id,
+        leader_email: email_id,
       });
 
       res.json({ message: `Team created with code: ${team_code}` });
@@ -46,12 +45,12 @@ const teamController = {
   jointeam: async (req, res) => {
     try {
       const { code } = req.params;
-      const user = req.user;
+      const { email_id } = req.body;
 
       await User.update(
         { team_code: code },
         {
-          where: { email_id: user.email_id },
+          where: { email_id: email_id },
         }
       );
 
