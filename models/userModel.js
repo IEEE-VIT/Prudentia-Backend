@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("../index.js");
+const sequelize = require("../db.js");
+const Team = require("./TeamModel.js");
 
 const User = sequelize.define("User", {
   email_id: {
@@ -21,7 +22,7 @@ const User = sequelize.define("User", {
     allowNull: false,
   },
   mobile_number: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.STRING,
     primaryKey: false,
     unique: true,
     allowNull: false,
@@ -31,10 +32,6 @@ const User = sequelize.define("User", {
     primaryKey: false,
     unique: true,
     allowNull: false,
-    references: {
-      model: "Team",
-      key: "team_code",
-    },
   },
 });
 module.exports = User;
